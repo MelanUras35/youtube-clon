@@ -1,0 +1,77 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ channel_user.username }} - VideoTube{% endblock %}
+
+{% block content %}
+<div class="channel-page">
+    <div class="channel-header">
+        <div class="channel-banner"></div>
+        <div class="channel-info-bar">
+            <div class="channel-avatar-large">
+                {{ channel_user.username|slice:":1"|upper }}
+            </div>
+            <div class="channel-meta">
+                <h1 class="channel-name-large">{{ channel_user.username }}</h1>
+                <span class="channel-stats" id="subscriberCount">{{ subscriber_count }} subscribers • {{ videos.count }}
+                    videos</span>
+            </div>
+            {% if user.is_authenticated and user != channel_user %}
+            <button class="subscribe-btn {% if is_subscribed %}subscribed{% endif %}" id="subscribeBtn"
+                data-user-id="{{ channel_user.id }}">
+                {% if is_subscribed %}Subscribed{% else %}Subscribe{% endif %}
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="channel-tabs">
+        <button class="tab-btn active">Videos</button>
+    </div>
+
+    <div class="video-grid">
+        {% for video in videos %}
+        <div class="video-card">
+            <a href="{% url 'video_detail' video.pk %}" class="video-thumbnail">
+                {% if video.thumbnail %}
+                <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}">
+                {% else %}
+                <div class="thumbnail-placeholder">
+                    <svg viewBox="0 0 24 24" width="48" height="48">
+                        <path fill="currentColor" d="M8 5v14l11-7z" />
+                    </svg>
+                </div>
+                {% endif %}
+            </a>
+            <div class="video-info">
+                <div class="video-details">
+                    <a href="{% url 'video_detail' video.pk %}" class="video-title">{{ video.title }}</a>
+                    <div class="video-meta">
+                        <span>{{ video.views }} views</span>
+                        <span class="separator">•</span>
+                        <span>{{ video.created_at|timesince }} ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" width="120" height="120">
+                <path fill="currentColor" opacity="0.3"
+                    d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z" />
+            </svg>
+            <h2>No videos uploaded yet</h2>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const csrfToken = '{{ csrf_token }}';
+    const channelId = {{ channel_user.id }};
+    const isAuthenticated = {{ user.is_authenticated| yesno: "true,false" }};
+</script>
+<script src="{% static 'core/js/channel.js' %}"></script>
+{% endblock %}

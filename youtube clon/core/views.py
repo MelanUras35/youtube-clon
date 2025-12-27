@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.db.models import Q, Count
 from .models import Video, Comment, Like, Subscription
 from .forms import VideoUploadForm, CommentForm, RegisterForm
-from .youtube_api import search_youtube_videos, format_view_count
+from .youtube_api import search_youtube_videos, format_view_count, get_video_details
 
 
 def get_user_subscriptions(user):
@@ -92,6 +92,34 @@ def video_detail(request, pk):
         'user_subscriptions': get_user_subscriptions(request.user),
     }
     return render(request, 'core/video_detail.html', context)
+
+
+def youtube_video_detail(request, video_id):
+    """View for embedded YouTube videos."""
+    video = get_video_details(video_id)
+    
+    if not video:
+        messages.error(request, 'Video not found')
+        return redirect('home')
+    
+    # Format view count
+    video['formatted_views'] = format_view_count(video.get('view_count', 0))
+    
+    # Get related videos (other YouTube videos)
+    related_videos = search_youtube_videos(max_results=10)
+    for related in related_videos:
+        related['formatted_views'] = format_view_count(related.get('view_count', 0))
+    
+    # Filter out current video from related
+    related_videos = [v for v in related_videos if v['id'] != video_id][:8]
+    
+    context = {
+        'video': video,
+        'related_videos': related_videos,
+        'user_subscriptions': get_user_subscriptions(request.user),
+    }
+    return render(request, 'core/youtube_video_detail.html', context)
+
 
 
 @login_required

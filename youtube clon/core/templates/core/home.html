@@ -23,7 +23,7 @@
 <div class="video-grid">
     {% for video in youtube_videos %}
     <div class="video-card">
-        <a href="{{ video.youtube_url }}" target="_blank" class="video-thumbnail">
+        <a href="{% url 'youtube_video_detail' video.id %}" class="video-thumbnail">
             <img src="{{ video.thumbnail }}" alt="{{ video.title }}">
             <span class="video-duration">{{ video.duration|default:"0:00" }}</span>
             <div class="thumbnail-overlay">
@@ -34,11 +34,26 @@
             </div>
         </a>
         <div class="video-info">
+            {% if video.channel_url %}
+            <a href="{{ video.channel_url }}" target="_blank" class="video-avatar">
+                {{ video.channel_title|slice:":1"|upper }}
+            </a>
+            {% else %}
             <a href="https://www.youtube.com/channel/{{ video.channel_id }}" target="_blank" class="video-avatar">
                 {{ video.channel_title|slice:":1"|upper }}
             </a>
+            {% endif %}
             <div class="video-details">
-                <a href="{{ video.youtube_url }}" target="_blank" class="video-title">{{ video.title }}</a>
+                <a href="{% url 'youtube_video_detail' video.id %}" class="video-title">{{ video.title }}</a>
+                {% if video.channel_url %}
+                <a href="{{ video.channel_url }}" target="_blank" class="video-channel">
+                    {{ video.channel_title }}
+                    <svg class="verified-badge" viewBox="0 0 24 24" width="14" height="14">
+                        <path fill="currentColor"
+                            d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zM9.8 17.3l-4.2-4.1L7 11.8l2.8 2.7L17 7.4l1.4 1.4-8.6 8.5z" />
+                    </svg>
+                </a>
+                {% else %}
                 <a href="https://www.youtube.com/channel/{{ video.channel_id }}" target="_blank" class="video-channel">
                     {{ video.channel_title }}
                     <svg class="verified-badge" viewBox="0 0 24 24" width="14" height="14">
@@ -46,6 +61,7 @@
                             d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zM9.8 17.3l-4.2-4.1L7 11.8l2.8 2.7L17 7.4l1.4 1.4-8.6 8.5z" />
                     </svg>
                 </a>
+                {% endif %}
                 <div class="video-meta">
                     <span>{{ video.formatted_views }} görüntüleme</span>
                     <span class="separator">•</span>

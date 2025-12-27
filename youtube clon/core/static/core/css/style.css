@@ -753,6 +753,40 @@ button {
     object-fit: contain;
 }
 
+.video-player iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.video-player #youtube-player {
+    width: 100%;
+    height: 100%;
+}
+
+.video-player #youtube-player iframe {
+    width: 100%;
+    height: 100%;
+}
+
+.video-fallback {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.video-fallback.is-hidden {
+    display: none;
+}
+
+.video-fallback a {
+    color: var(--blue-link);
+}
+
 .video-primary-info {
     padding: 12px 0;
 }

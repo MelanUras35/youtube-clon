@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('video/<int:pk>/', views.video_detail, name='video_detail'),
+    path('youtube/<str:video_id>/', views.youtube_video_detail, name='youtube_video_detail'),
     path('upload/', views.upload_video, name='upload'),
     path('like/<int:pk>/', views.toggle_like, name='toggle_like'),
     path('subscribe/<int:user_id>/', views.toggle_subscribe, name='toggle_subscribe'),
